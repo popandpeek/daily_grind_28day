@@ -65,7 +65,9 @@ body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;paddi
 .ereps.up{color:var(--up);}.ereps.lo{color:var(--lo);}.ereps.co{color:var(--co);}
 .chk{background:none;border:1.5px solid var(--bd);border-radius:50%;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:transparent;margin-left:2px;transition:background .15s,border-color .15s;}
 .er.done .chk{background:var(--acc);border-color:var(--acc);color:#000;}
-.rnote{padding:9px 17px 12px;font-size:11px;color:var(--mu);border-top:1px solid var(--bd);}
+.rnote{padding:9px 17px 4px;font-size:11px;color:var(--mu);border-top:1px solid var(--bd);}
+.rreset{display:block;width:100%;padding:10px 17px 13px;text-align:left;font-size:11px;color:#444;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.03em;transition:color .12s;}
+.rreset:hover{color:#888;}
 
 /* rest card */
 .rcard{background:var(--card);border:1px solid var(--bd);border-radius:6px;padding:36px 20px;text-align:center;animation:fu .35s ease both;}
@@ -379,6 +381,7 @@ function buildCard() {
   html += '<div class="sh lo">Lower Body</div>'+rows(day.lo,'lo');
   html += '<div class="sh co">Core</div>'+rows(day.co,'co');
   html += '<div class="rnote">Tap any exercise name for step-by-step instructions</div>';
+  html += '<button class="rreset" id="btn-reset">↺ Reset this day</button>';
   html += '</div>';
   el.innerHTML = html;
   banner.className = 'done' + (pct(cur)===100?' show':'');
@@ -403,6 +406,14 @@ document.addEventListener('click', function(e) {
   }
 
   // prev/next
+  if (t.id === 'btn-reset') {
+    var day = P[cur];
+    if (!day.rest) {
+      ['up','lo','co'].forEach(function(s){ day[s].forEach(function(_,i){ delete doneEx[key(cur,s,i)]; }); });
+      save(); buildAll();
+    }
+    return;
+  }
   if (t.id === 'btn-prev') {
     if (cur > 0) { cur--; save(); buildAll(); } return;
   }
