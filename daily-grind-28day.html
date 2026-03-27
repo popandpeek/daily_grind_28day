@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Grind</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0d0d;--sur:#161616;--card:#1a1a1a;--acc:#e8ff3c;--up:#3cf0e8;--lo:#ff7043;--co:#c77dff;--tx:#f0f0f0;--mu:#555;--bd:#252525;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;padding:20px 14px 80px;max-width:480px;margin:0 auto;}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;line-height:1;margin-bottom:2px;}
+.logo b{color:var(--acc);}
+.sub{font-size:11px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;}
+
+/* week tabs */
+.wtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px;}
+.wtab{background:var(--sur);border:1px solid var(--bd);color:var(--mu);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;padding:8px 0 6px;border-radius:4px;cursor:pointer;text-align:center;letter-spacing:.03em;transition:border-color .15s,color .15s;}
+.wtab small{display:block;font-size:9px;font-weight:400;opacity:.6;margin-top:1px;letter-spacing:.05em;}
+.wtab.on{border-color:var(--acc);color:var(--acc);}
+
+/* day buttons */
+.drow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px;}
+.dbtn{background:var(--sur);border:1px solid var(--bd);color:var(--mu);font-family:'Bebas Neue',sans-serif;font-size:15px;padding:8px 0;border-radius:4px;cursor:pointer;text-align:center;transition:border-color .12s,color .12s;}
+.dbtn.on{border-color:var(--acc);color:var(--acc);}
+.dbtn.done{border-color:#2d3d00;color:#5a7a00;}
+.dbtn.rest{background:#111;border-color:#1c1c1c;color:#2a2a2a;cursor:default;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;text-transform:uppercase;padding:11px 0;letter-spacing:.05em;}
+
+/* progress */
+.pmeta{display:flex;justify-content:space-between;font-size:11px;color:var(--mu);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;}
+.ptrack{height:3px;background:var(--bd);border-radius:2px;overflow:hidden;margin-bottom:14px;}
+.pfill{height:100%;background:var(--acc);border-radius:2px;transition:width .35s;}
+
+/* nav */
+.nav{display:flex;gap:7px;margin-bottom:14px;}
+.nbtn{flex:1;background:var(--sur);border:1px solid var(--bd);color:var(--mu);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:11px;border-radius:4px;cursor:pointer;transition:border-color .15s,color .15s;}
+.nbtn.pri{background:var(--acc);color:#000;border-color:var(--acc);font-weight:700;flex:2;}
+
+/* card */
+.wcard{background:var(--card);border:1px solid var(--bd);border-radius:6px;overflow:hidden;animation:fu .35s ease both;}
+.ch{padding:15px 17px 11px;border-bottom:1px solid var(--bd);}
+.dmeta{display:flex;align-items:center;gap:9px;margin-bottom:4px;}
+.dnum{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--mu);letter-spacing:1px;}
+.wbadge{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:2px;}
+.w1{background:rgba(232,255,60,.1);color:#b8cc2a;}.w2{background:rgba(60,240,232,.1);color:#2abab5;}.w3{background:rgba(255,112,67,.1);color:#cc5535;}.w4{background:rgba(199,125,255,.1);color:#a055dd;}
+.wtitle{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:1px;line-height:1.1;margin-bottom:7px;}
+.wmeta{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;}
+.etags{display:flex;flex-wrap:wrap;gap:5px;padding:9px 17px;border-bottom:1px solid var(--bd);}
+.etag{background:#1e1e1e;border:1px solid var(--bd);color:#777;font-size:10px;padding:2px 7px;border-radius:2px;text-transform:uppercase;letter-spacing:.04em;}
+.sh{padding:8px 17px 3px;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:7px;}
+.sh::after{content:'';flex:1;height:1px;background:var(--bd);}
+.sh.up{color:var(--up);}.sh.lo{color:var(--lo);}.sh.co{color:var(--co);}
+.er{display:flex;align-items:center;padding:9px 17px;gap:8px;transition:background .1s;}
+.er:hover{background:#1f1f1f;}
+.er.done{opacity:.3;}
+.er.done .en{text-decoration:line-through;}
+.eidx{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--mu);width:14px;text-align:right;flex-shrink:0;}
+.einfo{flex:1;min-width:0;}
+.en{font-size:14px;font-weight:500;cursor:pointer;border-bottom:1px dashed #2e2e2e;display:inline;transition:color .12s;}
+.en:hover{color:var(--acc);border-bottom-color:var(--acc);}
+.esub{font-size:11px;color:var(--mu);margin-top:2px;}
+.ereps{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.5px;flex-shrink:0;min-width:56px;text-align:right;}
+.ereps.up{color:var(--up);}.ereps.lo{color:var(--lo);}.ereps.co{color:var(--co);}
+.chk{background:none;border:1.5px solid var(--bd);border-radius:50%;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:transparent;margin-left:2px;transition:background .15s,border-color .15s;}
+.er.done .chk{background:var(--acc);border-color:var(--acc);color:#000;}
+.rnote{padding:9px 17px 12px;font-size:11px;color:var(--mu);border-top:1px solid var(--bd);}
+
+/* rest card */
+.rcard{background:var(--card);border:1px solid var(--bd);border-radius:6px;padding:36px 20px;text-align:center;animation:fu .35s ease both;}
+.ri{font-size:40px;margin-bottom:12px;}
+.rt{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:7px;}
+.rd{font-size:13px;color:var(--mu);line-height:1.7;}
+
+/* done banner */
+.done{display:none;background:var(--acc);color:#000;text-align:center;padding:13px;border-radius:4px;margin-top:12px;font-weight:700;font-size:13px;letter-spacing:.03em;}
+.done.show{display:block;}
+
+/* modal */
+.mover{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.mover.open{opacity:1;pointer-events:all;}
+.modal{background:#1d1d1d;border:1px solid #2e2e2e;border-radius:14px 14px 0 0;width:100%;max-width:480px;padding:20px 18px 44px;max-height:85vh;overflow-y:auto;}
+.mhandle{width:36px;height:4px;background:#333;border-radius:2px;margin:0 auto 16px;}
+.mname{font-family:'Bebas Neue',sans-serif;font-size:25px;letter-spacing:1px;margin-bottom:3px;}
+.mmuscle{font-size:11px;color:var(--mu);letter-spacing:.07em;text-transform:uppercase;margin-bottom:14px;}
+.msteps{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:14px;}
+.msteps li{display:flex;gap:9px;font-size:13px;line-height:1.6;}
+.msteps li .sn{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--acc);flex-shrink:0;width:16px;}
+.mtip{background:#222;border-left:3px solid var(--acc);padding:9px 13px;border-radius:0 4px 4px 0;font-size:12px;color:#bbb;line-height:1.55;margin-bottom:14px;}
+.myt{display:block;text-align:center;padding:11px;background:var(--sur);border:1px solid var(--bd);border-radius:4px;color:var(--acc);font-size:13px;font-weight:600;text-decoration:none;letter-spacing:.04em;margin-bottom:8px;}
+.mcls{display:block;width:100%;padding:10px;text-align:center;color:var(--mu);font-size:13px;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;}
+</style>
+</head>
+<body>
+
+<div class="logo">DAILY<b>.</b>GRIND</div>
+<div class="sub">28-day program · full body · 15–20 min</div>
+
+<div class="wtabs" id="wtabs"></div>
+<div class="drow" id="drow"></div>
+
+<div class="pmeta"><span id="plabel">Week 1 · Day 1</span><span id="ppct">0% done</span></div>
+<div class="ptrack"><div class="pfill" id="pbar" style="width:0%"></div></div>
+
+<div class="nav">
+  <button class="nbtn" id="btn-prev">← Prev</button>
+  <button class="nbtn pri" id="btn-next">Next Day →</button>
+</div>
+
+<div id="content"></div>
+<div class="done" id="done-banner">🏁 Day complete — rest up!</div>
+
+<div class="mover" id="mover">
+  <div class="modal" id="modal">
+    <div class="mhandle"></div>
+    <div class="mname" id="mname"></div>
+    <div class="mmuscle" id="mmuscle"></div>
+    <ul class="msteps" id="msteps"></ul>
+    <div class="mtip" id="mtip"></div>
+    <a class="myt" id="myt" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+    <button class="mcls" id="btn-close-modal">Close</button>
+  </div>
+</div>
+
+<script>
+// ── EXERCISE LIBRARY ──────────────────────────────────────────────────────
+var EX = {
+  "Wall Push-Up":{m:"Chest · Shoulders · Triceps",s:["Stand arm's length from wall, palms flat at shoulder height.","Bend elbows, lower chest toward wall. Body stays straight.","Press back to start. Fully extend."],t:"Keep your core tight and body in a perfectly straight line.",yt:"https://www.youtube.com/results?search_query=wall+push+up+form"},
+  "Knee Push-Up":{m:"Chest · Shoulders · Triceps",s:["Knees on floor, hands shoulder-width on handles.","Lower chest to floor, elbows at 45°.","Press up. Don't let hips sag or pike."],t:"Keep hips in line with shoulders. This is your push-up foundation.",yt:"https://www.youtube.com/results?search_query=knee+push+up+form"},
+  "Tricep Dips":{m:"Triceps · Chest · Shoulders",s:["Sit on chair edge, hands gripping seat beside hips.","Slide off and lower by bending elbows to ~90°.","Press back up through triceps. Back stays close to chair."],t:"Elbows point straight back — if they flare, you lose tricep tension.",yt:"https://www.youtube.com/results?search_query=tricep+dips+chair+form"},
+  "KB Single-Arm Row":{m:"Lats · Rhomboids · Biceps",s:["Hinge at hips to 45°, KB in one hand, opposite hand on knee.","Pull KB to hip — elbow drives straight back.","Lower slowly. Finish all reps, switch sides."],t:"Think 'elbow to hip' not 'hand to chest' — keeps the lat engaged.",yt:"https://www.youtube.com/results?search_query=kettlebell+single+arm+row+form"},
+  "KB Halo":{m:"Shoulders · Core · Thoracic Rotation",s:["Hold KB by the horns at chest height.","Circle it around your head — elbows tucked.","Complete all reps one direction, reverse."],t:"Brace core the whole time. The KB constantly tries to pull you sideways.",yt:"https://www.youtube.com/results?search_query=kettlebell+halo+form"},
+  "Push-Up":{m:"Chest · Shoulders · Triceps · Core",s:["Hands on rotating handles, shoulder-width. Body straight head to heels.","Lower chest until it nearly touches, elbows at 45°.","Press up explosively. Lock out at top."],t:"Rotating handles reduce wrist strain and deepen range of motion.",yt:"https://www.youtube.com/results?search_query=push+up+proper+form"},
+  "Pike Push-Up":{m:"Shoulders · Triceps",s:["Downward-dog position: hips high, hands on handles.","Bend elbows — lower head toward floor between hands.","Press back up through shoulders."],t:"Higher hips = more shoulder load. Elevate feet to increase difficulty.",yt:"https://www.youtube.com/results?search_query=pike+push+up+form"},
+  "Wide Push-Up":{m:"Chest (outer) · Shoulders",s:["Set handles wider than shoulder-width.","Lower chest toward center — elbows flare more than standard.","Press up through outer chest."],t:"Wider grip shifts emphasis to outer chest and front delts.",yt:"https://www.youtube.com/results?search_query=wide+grip+push+up+form"},
+  "Diamond Push-Up":{m:"Triceps · Inner Chest",s:["Form a diamond with thumbs and index fingers under chest.","Lower slowly — elbows track backward, not flaring out.","Press through triceps."],t:"Harder than they look. Do them on handles if wrists complain.",yt:"https://www.youtube.com/results?search_query=diamond+push+up+form"},
+  "KB Press":{m:"Shoulders · Triceps · Core",s:["Clean KB to rack: fist at shoulder, elbow tucked, forearm vertical.","Press straight up until arm is fully extended overhead.","Lower under control back to rack."],t:"Brace core and glutes every rep. The KB wants to pull you sideways.",yt:"https://www.youtube.com/results?search_query=kettlebell+press+form"},
+  "KB Upright Row":{m:"Shoulders · Traps · Biceps",s:["Hold KB with both hands in front of hips.","Pull straight up — elbows lead and flare to sides.","Elbows rise above KB at peak."],t:"Don't go too heavy — controlled movement protects the shoulder joint.",yt:"https://www.youtube.com/results?search_query=kettlebell+upright+row+form"},
+  "Renegade Row":{m:"Back · Biceps · Core (anti-rotation)",s:["Plank on KB handles. Feet wide for stability.","Row one KB to hip — hips stay completely square.","Lower it, alternate sides."],t:"Wider feet = more stable. Resist every urge to rotate your hips.",yt:"https://www.youtube.com/results?search_query=renegade+row+form"},
+  "Decline Push-Up":{m:"Upper Chest · Shoulders",s:["Feet on chair, hands on handles at floor level.","Body in straight line from heels to head.","Lower chest and press back up."],t:"Higher feet = more upper chest and shoulder emphasis.",yt:"https://www.youtube.com/results?search_query=decline+push+up+form"},
+  "KB Bent-Over Row":{m:"Lats · Rhomboids · Biceps",s:["Hinge at hips to ~45°, KB in both or one hand.","Pull to lower ribs — elbows drive straight back.","Lower with control. Flat back throughout."],t:"Keep neck neutral — don't crane up to look forward.",yt:"https://www.youtube.com/results?search_query=kettlebell+bent+over+row+form"},
+  "KB Push Press":{m:"Shoulders · Triceps · Legs",s:["Rack position. Dip slightly at the knees.","Explode up through legs and press KB overhead in one motion.","Lower under control."],t:"Leg drive is the point — it lets you use heavier weight. Lock out fully.",yt:"https://www.youtube.com/results?search_query=kettlebell+push+press+form"},
+  "KB Clean":{m:"Full Body · Shoulders · Hips",s:["KB between feet in a hinge. Hike it back between legs.","Drive hips forward explosively — KB floats up.","Catch in rack: elbow tucked, fist at shoulder."],t:"KB should land softly in rack. If it bangs your forearm, let it rotate around your hand.",yt:"https://www.youtube.com/results?search_query=kettlebell+clean+form"},
+  "Push-Up to T-Rotation":{m:"Chest · Shoulders · Obliques",s:["Do a standard push-up on handles.","At top, rotate body and raise one arm to ceiling.","Hold 1s, return, alternate sides."],t:"Make the rotation deliberate — don't rush through it.",yt:"https://www.youtube.com/results?search_query=push+up+T+rotation+form"},
+  "Hindu Push-Up":{m:"Shoulders · Chest · Triceps · Hip Flexors",s:["Start in downward-dog: hips high.","Dive nose toward floor in a swooping arc.","Finish in upward-dog: hips low, chest up. Reverse."],t:"Keep it smooth and flowing. Jerky = muscling it rather than moving.",yt:"https://www.youtube.com/results?search_query=hindu+push+up+form"},
+  "Archer Push-Up":{m:"Chest · Shoulders · Triceps (unilateral)",s:["Handles wide. Lower while shifting weight to one arm — other arm extends.","Working arm bends fully; extended arm stays nearly straight.","Press to center, shift to other side."],t:"This is a one-arm progression. Go slow — demands serious shoulder stability.",yt:"https://www.youtube.com/results?search_query=archer+push+up+form"},
+  "Pseudo Planche Lean":{m:"Chest · Anterior Delts · Core",s:["On push-up handles in a standard plank.","Lean your body forward — shoulders pass beyond your hands.","Hold. The more forward lean, the harder."],t:"Even a modest lean builds serious anterior delt strength. Progress the lean over weeks.",yt:"https://www.youtube.com/results?search_query=pseudo+planche+lean+form"},
+  "KB Clean and Press":{m:"Full Body · Shoulders",s:["Perform a KB clean to rack position.","Without pause, press KB overhead — fully locked out.","Lower to rack, then floor. One rep."],t:"Link clean and press as one fluid motion once comfortable with each separately.",yt:"https://www.youtube.com/results?search_query=kettlebell+clean+and+press+form"},
+  "Bodyweight Squat":{m:"Quads · Glutes · Hamstrings",s:["Feet shoulder-width, toes slightly out. Arms forward.","Sit back and down — thighs at least parallel to floor.","Drive through heels. Squeeze glutes at top."],t:"Depth is key. Shallow squats cheat the glutes. Hit parallel or below every rep.",yt:"https://www.youtube.com/results?search_query=bodyweight+squat+form"},
+  "Squat Hold":{m:"Quads · Glutes · Ankle Mobility",s:["Lower into your deepest squat position, heels flat.","Hold with chest up and hands in front for balance.","Breathe and try to relax deeper into the position."],t:"Mobility work as much as strength. Consistency compounds.",yt:"https://www.youtube.com/results?search_query=deep+squat+hold+mobility"},
+  "Reverse Lunge":{m:"Quads · Glutes · Hamstrings",s:["Stand tall. Step one foot straight back.","Lower rear knee toward floor. Front shin stays vertical.","Drive through front heel to stand."],t:"More knee-friendly than forward lunges — perfect for getting back into training.",yt:"https://www.youtube.com/results?search_query=reverse+lunge+form"},
+  "Glute Bridge":{m:"Glutes · Hamstrings · Lower Back",s:["Lie on back, knees bent, feet flat hip-width apart.","Drive hips up squeezing glutes — straight line knees to shoulders.","Pause 1s at top, lower with control."],t:"Push through heels, not toes. You should feel this entirely in your glutes.",yt:"https://www.youtube.com/results?search_query=glute+bridge+form"},
+  "Single-Leg Glute Bridge":{m:"Glutes · Hamstrings (unilateral)",s:["Lie on back, one knee bent and foot flat. Other leg extended straight.","Drive through planted heel to lift hips.","Keep hips level — don't let free side drop."],t:"The extended leg adds a core and hip stabilizer challenge. Go slow.",yt:"https://www.youtube.com/results?search_query=single+leg+glute+bridge+form"},
+  "KB Goblet Squat":{m:"Quads · Glutes · Core",s:["Hold KB by horns at chest, elbows tucked.","Squat deep — elbows track inside knees at bottom.","Drive through heels, maintain upright torso."],t:"The goblet position forces you upright. One of the best squat teachers.",yt:"https://www.youtube.com/results?search_query=kettlebell+goblet+squat+form"},
+  "KB Swing":{m:"Glutes · Hamstrings · Core · Shoulders",s:["Hinge with KB between feet. Hike it back.","Snap hips forward explosively — KB floats to chest height.","Let it swing back between legs. It is a hinge, not a squat."],t:"Power comes from the hip snap — not the arms. If quads burn, you're squatting.",yt:"https://www.youtube.com/results?search_query=kettlebell+swing+form"},
+  "KB Romanian DL":{m:"Hamstrings · Glutes · Lower Back",s:["Hold KB in front, soft bend in knees.","Push hips back as you lower KB along legs — feel hamstring stretch.","Drive hips forward. Squeeze glutes at top."],t:"If you feel it in your lower back instead of hamstrings, you're squatting not hinging.",yt:"https://www.youtube.com/results?search_query=kettlebell+romanian+deadlift+form"},
+  "KB Deadlift":{m:"Glutes · Hamstrings · Back · Core",s:["KB between feet, hip-width stance, toes slightly out.","Grip handle. Flat back, chest up, shoulders packed back.","Drive through heels — extend hips and knees together to stand."],t:"Think 'push the floor away' rather than 'pull the bell up.'",yt:"https://www.youtube.com/results?search_query=kettlebell+deadlift+form"},
+  "Step-Up":{m:"Quads · Glutes",s:["Stand in front of a sturdy chair.","Step up with one foot, drive through that heel to bring the other foot up.","Step back down with control. Alternate leads."],t:"No push-off from the back foot — all work from the elevated leg.",yt:"https://www.youtube.com/results?search_query=step+up+exercise+form"},
+  "KB Single-Leg DL":{m:"Hamstrings · Glutes · Balance",s:["Hold KB in opposite hand from standing leg.","Hinge at hip — back leg rises as torso lowers, forming a T.","Return by driving through planted heel."],t:"Pick a fixed point on the floor for balance. Start very light.",yt:"https://www.youtube.com/results?search_query=single+leg+kettlebell+deadlift+form"},
+  "Wall Sit":{m:"Quads · Glutes (isometric)",s:["Back flat against wall. Slide down until thighs parallel to floor.","Feet flat, knees directly over ankles.","Hold. Arms rest on thighs or extend forward."],t:"If lower back leaves the wall, your hips are too low — slide up slightly.",yt:"https://www.youtube.com/results?search_query=wall+sit+form"},
+  "Jump Squat":{m:"Quads · Glutes · Calves (power)",s:["Squat to parallel, weight in heels.","Explode upward, leaving the ground.","Land softly through toes then heel, absorb with a slight squat."],t:"Land quietly. Loud landings = joint stress. Soft landing = good mechanics.",yt:"https://www.youtube.com/results?search_query=jump+squat+form"},
+  "Split Jump":{m:"Quads · Glutes · Calves (power)",s:["Start in a lunge position.","Jump explosively and switch legs mid-air.","Land in the opposite lunge. Torso stays upright."],t:"Land on ball of foot first, absorb into heel. Brief rest between reps is fine.",yt:"https://www.youtube.com/results?search_query=split+jump+lunge+form"},
+  "Bulgarian Split Squat":{m:"Quads · Glutes (unilateral)",s:["Rear foot elevated on chair. Front foot stepped well forward.","Lower rear knee toward floor — front shin vertical.","Drive through front heel. Don't let front knee cave in."],t:"One of the best single-leg exercises in existence. Expect DOMS. Worth it.",yt:"https://www.youtube.com/results?search_query=bulgarian+split+squat+form"},
+  "KB Staggered DL":{m:"Hamstrings · Glutes (unilateral emphasis)",s:["One foot slightly behind as a 'kickstand' — no weight on it.","Hold KB in front. Hinge at hips with flat back.","Drive through front heel to stand."],t:"Bridges the gap between bilateral DL and full single-leg. Great for rebuilding.",yt:"https://www.youtube.com/results?search_query=staggered+stance+deadlift+form"},
+  "Good Morning":{m:"Hamstrings · Glutes · Lower Back",s:["Feet hip-width. Hands behind head or KB across upper back.","Hinge at hips with soft knees — torso lowers toward parallel.","Drive hips forward. Squeeze glutes at top."],t:"Never round your spine. If you feel it in lower back more than hamstrings, reduce range.",yt:"https://www.youtube.com/results?search_query=good+morning+exercise+form"},
+  "Cossack Squat":{m:"Adductors · Glutes · Quads · Ankle Mobility",s:["Feet wide, toes out. Shift weight to one side and sink into that hip.","Other leg extends straight — toes up if mobility allows.","Drive back to center, repeat other side."],t:"Treat it as mobility work as much as strength. Sit into each rep.",yt:"https://www.youtube.com/results?search_query=cossack+squat+form"},
+  "Nordic Hamstring Curl":{m:"Hamstrings (eccentric)",s:["Kneel with feet anchored under something heavy.","Slowly lower your torso toward the floor using hamstrings to control it.","Catch with hands, push back up, hamstrings pull you back."],t:"The slow eccentric lowering is the whole point. Make each rep take 3-5 seconds.",yt:"https://www.youtube.com/results?search_query=nordic+hamstring+curl+form"},
+  "KB Snatch":{m:"Full Body · Shoulders · Hips",s:["KB between feet. Hike it back like a swing.","Drive hips and pull — as it rises, punch your hand through it.","Catch locked out overhead. Lower back to swing."],t:"Power comes from hips, not the arm. Float the bell — don't muscle it.",yt:"https://www.youtube.com/results?search_query=kettlebell+snatch+form"},
+  "Glute Bridge Walkout":{m:"Glutes · Hamstrings · Core",s:["Get into a glute bridge — hips lifted.","Walk heels out one at a time until legs nearly straight.","Walk back in. Hips elevated the entire time."],t:"Slow is harder. The walkout phase is where the hamstring work happens.",yt:"https://www.youtube.com/results?search_query=glute+bridge+walkout+form"},
+  "Plank Hold":{m:"Core · Shoulders · Glutes",s:["Forearms or hands on handles. Body in straight line head to heels.","Squeeze glutes and brace abs hard.","Hold. Don't let hips sag or pike."],t:"Your real hold time is where form breaks — build from there.",yt:"https://www.youtube.com/results?search_query=plank+form+tutorial"},
+  "Dead Bug":{m:"Deep Core · Hip Flexors",s:["Lie on back. Arms up, knees at 90° above hips.","Lower opposite arm and leg toward floor — lower back stays flat.","Return and alternate."],t:"Lower back must stay pressed to the floor. If it arches, you've gone too far.",yt:"https://www.youtube.com/results?search_query=dead+bug+exercise+form"},
+  "Bird Dog":{m:"Erectors · Glutes · Core Stability",s:["On hands and knees. Wrists under shoulders, knees under hips.","Extend opposite arm and leg simultaneously. Hold 2s.","Return with control and alternate."],t:"Imagine balancing a glass of water on your lower back — that's the stability.",yt:"https://www.youtube.com/results?search_query=bird+dog+exercise+form"},
+  "Bicycle Crunch":{m:"Obliques · Rectus Abdominis",s:["Lie on back, hands lightly behind head. Knees bent.","Bring one knee to chest while rotating opposite elbow toward it.","Extend other leg. Alternate in a cycling motion."],t:"Slow it down. Most people rush and lose the rotation — which is the whole exercise.",yt:"https://www.youtube.com/results?search_query=bicycle+crunch+form"},
+  "Side Plank":{m:"Obliques · Hip Abductors",s:["Lie on side, elbow directly under shoulder.","Lift hips — straight line head to feet.","Hold. Don't let hips sag."],t:"Stack feet for standard difficulty, stagger for easier. Raise top arm to increase intensity.",yt:"https://www.youtube.com/results?search_query=side+plank+form"},
+  "Hollow Body Hold":{m:"Core (full anterior chain)",s:["Lie on back, arms overhead, legs straight.","Press lower back into floor and lift arms, head, and legs a few inches.","Hold — slight banana shape."],t:"If lower back leaves the floor, bend knees or raise legs higher. Back first.",yt:"https://www.youtube.com/results?search_query=hollow+body+hold+form"},
+  "Russian Twist":{m:"Obliques · Transverse Abdominis",s:["Sit with knees bent, feet flat or elevated. Lean back ~45°.","Rotate torso side to side, touching hands or KB to floor.","Chest up — don't hunch forward."],t:"Rotation comes from your torso, not your arms. Add KB to increase challenge.",yt:"https://www.youtube.com/results?search_query=russian+twist+form"},
+  "Plank Shoulder Tap":{m:"Core · Shoulders · Anti-Rotation",s:["Full plank on handles or hands.","Lift one hand to tap opposite shoulder.","Alternate — resist rotating hips the entire time."],t:"Wider feet = easier. Narrow = harder. Goal is zero hip movement.",yt:"https://www.youtube.com/results?search_query=plank+shoulder+tap+form"},
+  "Mountain Climbers":{m:"Core · Hip Flexors · Shoulders",s:["Push-up position.","Drive one knee toward chest, quickly switch legs.","Keep hips level — don't let them bounce."],t:"Slow = more core. Fast = more cardio. Both are effective.",yt:"https://www.youtube.com/results?search_query=mountain+climbers+form"},
+  "Superman Hold":{m:"Lower Back · Glutes · Posterior Chain",s:["Lie face down, arms extended overhead.","Lift arms, chest, and legs off floor simultaneously.","Squeeze glutes at top. Hold, lower with control."],t:"Counters all the anterior core work. Don't skip — it's posterior chain insurance.",yt:"https://www.youtube.com/results?search_query=superman+hold+exercise+form"},
+  "V-Up":{m:"Rectus Abdominis · Hip Flexors",s:["Lie flat, arms overhead, legs straight.","Simultaneously raise legs and torso, reaching hands to feet.","Lower with control — don't drop."],t:"Too hard? Bend your knees. Build toward straight-leg over time.",yt:"https://www.youtube.com/results?search_query=v+ups+form"},
+  "Flutter Kicks":{m:"Hip Flexors · Lower Abs",s:["Lie on back, hands under glutes, legs slightly elevated.","Kick legs up and down in small alternating movements.","Press lower back into floor throughout."],t:"Lower back pressed down is non-negotiable. Arch = raise legs higher.",yt:"https://www.youtube.com/results?search_query=flutter+kicks+form"},
+  "L-Sit Hold":{m:"Core · Hip Flexors · Triceps",s:["On push-up handles, support yourself with straight arms.","Raise legs to parallel with floor and hold.","If too hard, tuck knees toward chest."],t:"Even a tuck hold is excellent. Build toward full extension over weeks.",yt:"https://www.youtube.com/results?search_query=l+sit+hold+form"},
+  "Dragon Flag":{m:"Entire Core · Lats",s:["Lie on floor, grip something sturdy behind your head.","Raise body until nearly vertical — stay rigid.","Lower slowly as one unit — don't let hips drop first."],t:"The eccentric lowering builds the strength. Make it take 3-5 seconds.",yt:"https://www.youtube.com/results?search_query=dragon+flag+form"},
+  "KB Woodchop":{m:"Obliques · Shoulders · Core",s:["Hold KB with both hands. Feet shoulder-width.","Rotate and bring KB from high on one side diagonally down across body.","Return to start. Finish all reps, switch directions."],t:"Power comes from rotating your torso — not just swinging your arms.",yt:"https://www.youtube.com/results?search_query=kettlebell+woodchop+form"},
+  "KB Pallof Hold":{m:"Core · Anti-Rotation",s:["Hold KB against one side of your torso at chest height.","Stand tall, bracing hard against the weight pulling you sideways.","Hold for time, switch sides."],t:"Further the KB from your center, the harder. Keep it close to start.",yt:"https://www.youtube.com/results?search_query=pallof+press+form"},
+  "Windshield Wiper":{m:"Obliques · Hip Flexors",s:["Lie on back, arms wide, legs raised to 90°.","Lower both legs to one side — just above floor.","Return to center, lower to other side."],t:"Slower = harder. Bent knees is the beginner version.",yt:"https://www.youtube.com/results?search_query=windshield+wipers+exercise+form"},
+  "Turkish Get-Up":{m:"Full Body · Shoulders · Core · Hips",s:["Lie holding KB overhead one hand, arm straight. Bend same-side knee.","Press to elbow, then hand, swing free leg back to kneel. Stand.","Reverse every step to return to floor."],t:"Most technical move in this program. Go slow, light weight, eyes on bell at all times.",yt:"https://www.youtube.com/results?search_query=turkish+get+up+form+tutorial"},
+  "KB Farmer Carry":{m:"Core · Grip · Traps",s:["Hold KB(s) at sides. Stand tall, shoulders down and back.","Walk slowly — no leaning toward the loaded side.","Maintain posture throughout."],t:"Single KB is harder than two — core works overtime to resist lateral pull.",yt:"https://www.youtube.com/results?search_query=farmer+carry+form"},
+  "Bear Crawl":{m:"Core · Shoulders · Hip Flexors",s:["Hands and knees. Lift knees 2 inches off floor.","Move opposite hand and foot forward simultaneously.","Stay low, hips level, move with control."],t:"Slower is harder. Moving fast lets you cheat. Slow = brutal core challenge.",yt:"https://www.youtube.com/results?search_query=bear+crawl+exercise+form"},
+  "KB Sit-Up Press":{m:"Core · Shoulders",s:["Lie on back, KB at chest. Feet flat.","Sit up — at the top, press KB overhead.","Lower KB to chest and lie back with control."],t:"The press at the top is the finisher. Lock out fully before returning.",yt:"https://www.youtube.com/results?search_query=kb+sit+up+press+form"},
+  "Hollow Rock":{m:"Core (full anterior chain)",s:["Hollow body position: back pressed down, arms overhead, legs raised.","Rock forward and back — like a rocking chair.","Maintain hollow shape throughout."],t:"Lower back must stay down through the entire rock. If it lifts, reduce range.",yt:"https://www.youtube.com/results?search_query=hollow+rock+exercise+form"},
+  "Leg Raise":{m:"Hip Flexors · Lower Abs",s:["Lie on back, legs straight, hands under glutes.","Raise legs to vertical, lower slowly — stop just before floor.","Pause and repeat."],t:"The slow lower is the work. Never let legs drop.",yt:"https://www.youtube.com/results?search_query=lying+leg+raise+form"},
+  "Copenhagen Plank":{m:"Adductors · Obliques",s:["Lie on side. Top foot rests on chair or step.","Lift hips — top foot and elbow support you.","Hold. Straight line from head to foot."],t:"Taxes the inner thigh unlike almost any other exercise. Expect soreness in new places.",yt:"https://www.youtube.com/results?search_query=copenhagen+plank+form"},
+  "Stir the Pot":{m:"Core · Shoulders",s:["Forearms on handles in a plank.","Move forearms in small circles — both directions.","Hips and torso stay completely still."],t:"Small circles, huge core challenge. Deceptively brutal.",yt:"https://www.youtube.com/results?search_query=stir+the+pot+plank+form"},
+  "Plank to Downdog":{m:"Core · Shoulders · Hamstrings",s:["Plank on handles.","Push hips up and back into downward-dog.","Return to plank. One rep."],t:"Move deliberately. Feel the engagement shift with each transition.",yt:"https://www.youtube.com/results?search_query=plank+to+downward+dog+form"},
+  "Back Extension Hold":{m:"Lower Back · Glutes",s:["Lie face down, hands behind head.","Lift chest and legs off floor simultaneously.","Hold, squeeze glutes."],t:"Don't hyperextend aggressively — lift until lower back engages, hold there.",yt:"https://www.youtube.com/results?search_query=back+extension+hold+form"}
+};
+
+// ── PROGRAM ──────────────────────────────────────────────────────────────
+var P = [
+  // WEEK 1
+  {w:1,t:"First Steps",eq:["Bodyweight","Push-up handles"],rs:"45s between sets",
+   up:[{n:"Wall Push-Up",r:"3×12",s:"full range, slow down"},{n:"Tricep Dips",r:"3×8",s:"elbows back, slow descent"},{n:"KB Single-Arm Row",r:"3×8 ea",s:"light KB, hinge at 45°"}],
+   lo:[{n:"Bodyweight Squat",r:"3×12",s:"full depth, heels flat"},{n:"Reverse Lunge",r:"3×8 ea",s:"slow and controlled"},{n:"Glute Bridge",r:"3×15",s:"pause 1s at top"}],
+   co:[{n:"Dead Bug",r:"3×8 ea",s:"lower back flat the whole time"},{n:"Plank Hold",r:"3×20s",s:"build from here"},{n:"Bird Dog",r:"3×8 ea",s:"hold 2s at top"}]},
+  {w:1,rest:true},
+  {w:1,t:"Move & Groove",eq:["Bodyweight","Adjustable KB"],rs:"45s between sets",
+   up:[{n:"Knee Push-Up",r:"3×10",s:"chest touches floor"},{n:"KB Single-Arm Row",r:"3×10 ea",s:"light, full range"},{n:"KB Halo",r:"3×8 ea",s:"light KB, brace core"}],
+   lo:[{n:"Squat Hold",r:"3×20s",s:"relax deeper each rep"},{n:"Step-Up",r:"3×10 ea",s:"all work from top leg"},{n:"Glute Bridge",r:"3×15",s:"squeeze hard at top"}],
+   co:[{n:"Bird Dog",r:"3×10 ea",s:"hips square"},{n:"Dead Bug",r:"3×10 ea",s:"exhale on extend"},{n:"Side Plank",r:"3×15s ea",s:"stack or stagger feet"}]},
+  {w:1,t:"Body Basics",eq:["Bodyweight","Push-up handles"],rs:"40s between sets",
+   up:[{n:"Push-Up",r:"3×8",s:"handles, full range"},{n:"Tricep Dips",r:"3×10",s:"slow descent"},{n:"Pike Push-Up",r:"3×6",s:"hips high, nose to floor"}],
+   lo:[{n:"Bodyweight Squat",r:"3×15",s:"1s pause at bottom"},{n:"Reverse Lunge",r:"3×10 ea",s:"chest tall"},{n:"Single-Leg Glute Bridge",r:"3×10 ea",s:"hips level"}],
+   co:[{n:"Plank Hold",r:"3×25s",s:"squeeze glutes"},{n:"Hollow Body Hold",r:"3×20s",s:"back stays pressed down"},{n:"Bicycle Crunch",r:"3×12",s:"slow rotation"}]},
+  {w:1,rest:true},
+  {w:1,t:"KB Introduction",eq:["Adjustable KB","Push-up handles"],rs:"45s between sets",
+   up:[{n:"KB Press",r:"3×6 ea",s:"light — nail the rack position"},{n:"Push-Up",r:"3×8",s:"handles, slow negative"},{n:"KB Single-Arm Row",r:"3×10 ea",s:"elbow to hip"}],
+   lo:[{n:"KB Goblet Squat",r:"3×10",s:"elbows inside knees"},{n:"KB Romanian DL",r:"3×8",s:"push hips back, feel the stretch"},{n:"Glute Bridge",r:"3×15",s:"drive through heels"}],
+   co:[{n:"Dead Bug",r:"3×10 ea",s:"breathe steadily"},{n:"Plank Hold",r:"3×30s",s:"10s more than day 1"},{n:"KB Halo",r:"3×8 ea",s:"resist lateral pull"}]},
+  {w:1,rest:true},
+  // WEEK 2
+  {w:2,t:"Building Base",eq:["Push-up handles","Adjustable KB"],rs:"35s between sets",
+   up:[{n:"Push-Up",r:"3×12",s:"handles, controlled pace"},{n:"KB Press",r:"3×8 ea",s:"brace opposite side"},{n:"Pike Push-Up",r:"3×8",s:"load the shoulders"}],
+   lo:[{n:"KB Goblet Squat",r:"3×12",s:"1s pause at bottom"},{n:"Reverse Lunge",r:"3×12 ea",s:"goblet KB hold if ready"},{n:"KB Romanian DL",r:"3×10",s:"slow controlled hinge"}],
+   co:[{n:"Hollow Body Hold",r:"3×25s",s:"5s more than week 1"},{n:"Russian Twist",r:"3×16",s:"KB optional"},{n:"Side Plank",r:"3×20s ea",s:"hips stay up"}]},
+  {w:2,rest:true},
+  {w:2,t:"Swing Day",eq:["Adjustable KB","Push-up handles"],rs:"40s between sets",
+   up:[{n:"KB Single-Arm Row",r:"3×12 ea",s:"heavier than week 1"},{n:"Push-Up",r:"3×12",s:"2s pause at bottom"},{n:"KB Upright Row",r:"3×10",s:"elbows lead high"}],
+   lo:[{n:"KB Swing",r:"4×12",s:"hip snap — not a squat"},{n:"KB Goblet Squat",r:"3×12",s:"upright torso"},{n:"Step-Up",r:"3×12 ea",s:"hold KB at sides"}],
+   co:[{n:"Plank Shoulder Tap",r:"3×20",s:"zero hip movement"},{n:"Mountain Climbers",r:"3×25s",s:"controlled pace"},{n:"Dead Bug",r:"3×12 ea",s:"lower back flat"}]},
+  {w:2,t:"Push & Hinge",eq:["Push-up handles","Adjustable KB"],rs:"35s between sets",
+   up:[{n:"Wide Push-Up",r:"3×10",s:"handles, outer chest focus"},{n:"Diamond Push-Up",r:"3×8",s:"elbows track back"},{n:"KB Press",r:"3×10 ea",s:"control the lower"}],
+   lo:[{n:"KB Romanian DL",r:"4×10",s:"feel every inch of the hinge"},{n:"KB Swing",r:"4×15",s:"power — drive with hips"},{n:"Single-Leg Glute Bridge",r:"3×12 ea",s:"hips level"}],
+   co:[{n:"V-Up",r:"3×10",s:"control the lower"},{n:"Plank Hold",r:"3×40s",s:"double week 1 time"},{n:"Superman Hold",r:"3×10",s:"squeeze glutes at top"}]},
+  {w:2,rest:true},
+  {w:2,t:"Unilateral Day",eq:["Adjustable KB","Push-up handles"],rs:"40s between sets",
+   up:[{n:"Renegade Row",r:"3×6 ea",s:"wide feet, no hip rotation"},{n:"KB Press",r:"3×10 ea",s:"single arm, brace hard"},{n:"Pike Push-Up",r:"3×10",s:"nose touches floor"}],
+   lo:[{n:"KB Single-Leg DL",r:"3×8 ea",s:"light — nail the balance"},{n:"Reverse Lunge",r:"3×12 ea",s:"goblet KB hold"},{n:"Wall Sit",r:"3×40s",s:"build from week 1"}],
+   co:[{n:"Side Plank",r:"3×25s ea",s:"add hip dip if easy"},{n:"Bird Dog",r:"3×12 ea",s:"extend fully and hold"},{n:"Hollow Body Hold",r:"3×30s",s:"push through"}]},
+  {w:2,rest:true},
+  // WEEK 3
+  {w:3,t:"Power On",eq:["Push-up handles","Adjustable KB"],rs:"30s between sets",
+   up:[{n:"Push-Up",r:"4×12",s:"add 1s pause at bottom"},{n:"KB Clean",r:"4×5 ea",s:"nail the rack catch"},{n:"Decline Push-Up",r:"3×10",s:"feet elevated on chair"}],
+   lo:[{n:"KB Goblet Squat",r:"4×15",s:"heavier than week 2"},{n:"KB Swing",r:"4×15",s:"powerful hip snap"},{n:"Bulgarian Split Squat",r:"3×8 ea",s:"slow controlled descent"}],
+   co:[{n:"L-Sit Hold",r:"3×15s",s:"handles, tuck knees if needed"},{n:"Bicycle Crunch",r:"3×20",s:"slow deliberate rotation"},{n:"Mountain Climbers",r:"3×35s",s:"drive hard"}]},
+  {w:3,rest:true},
+  {w:3,t:"Pull Focus",eq:["Adjustable KB","Push-up handles"],rs:"30s between sets",
+   up:[{n:"KB Bent-Over Row",r:"4×10",s:"heavy, maintain flat back"},{n:"Renegade Row",r:"3×8 ea",s:"no rotation"},{n:"KB Upright Row",r:"3×12",s:"controlled throughout"}],
+   lo:[{n:"KB Romanian DL",r:"4×12",s:"heavy, slow hinge"},{n:"KB Staggered DL",r:"3×10 ea",s:"unilateral emphasis"},{n:"Good Morning",r:"3×12",s:"KB or bodyweight"}],
+   co:[{n:"Hollow Body Hold",r:"4×35s",s:"arms fully extended overhead"},{n:"Superman Hold",r:"3×12",s:"posterior counter-balance"},{n:"KB Pallof Hold",r:"3×20s ea",s:"resist rotation hard"}]},
+  {w:3,t:"Explosive",eq:["Push-up handles","Bodyweight"],rs:"40s between sets",
+   up:[{n:"Push-Up to T-Rotation",r:"4×8 ea",s:"rotate fully, hold 1s"},{n:"Diamond Push-Up",r:"4×10",s:"elbows track back"},{n:"Hindu Push-Up",r:"3×10",s:"fluid arc motion"}],
+   lo:[{n:"Jump Squat",r:"4×10",s:"land soft heel-to-toe"},{n:"Split Jump",r:"3×8 ea",s:"explode and switch"},{n:"Bulgarian Split Squat",r:"3×10 ea",s:"controlled descent"}],
+   co:[{n:"Dragon Flag",r:"3×5",s:"slow eccentric — 3s down"},{n:"Windshield Wiper",r:"3×10 ea",s:"bent knees ok"},{n:"Flutter Kicks",r:"3×40s",s:"lower back flat"}]},
+  {w:3,rest:true},
+  {w:3,t:"KB Complex",eq:["Adjustable KB","Push-up handles"],rs:"45s after each set",
+   up:[{n:"KB Clean",r:"4×6 ea",s:"fluid, no bang on forearm"},{n:"KB Push Press",r:"4×8 ea",s:"leg drive, lock out"},{n:"Pseudo Planche Lean",r:"3×20s",s:"lean forward on handles"}],
+   lo:[{n:"KB Deadlift",r:"4×10",s:"heavy, full lockout"},{n:"KB Swing",r:"4×20",s:"peak swing volume"},{n:"KB Goblet Squat",r:"4×12",s:"deep, 1s pause at bottom"}],
+   co:[{n:"Turkish Get-Up",r:"2×3 ea",s:"light KB, completely deliberate"},{n:"KB Woodchop",r:"3×10 ea",s:"power from torso rotation"},{n:"Bear Crawl",r:"3×25s",s:"knees 2in off floor, slow"}]},
+  {w:3,rest:true},
+  // WEEK 4
+  {w:4,t:"Peak Push",eq:["Push-up handles","Adjustable KB"],rs:"25s between sets",
+   up:[{n:"Archer Push-Up",r:"4×6 ea",s:"slow, full range"},{n:"KB Push Press",r:"4×8 ea",s:"heavy — leg drive"},{n:"Decline Push-Up",r:"4×12",s:"feet as high as possible"}],
+   lo:[{n:"Bulgarian Split Squat",r:"4×10 ea",s:"heavy KB or bodyweight"},{n:"Jump Squat",r:"4×12",s:"max effort every rep"},{n:"KB Romanian DL",r:"4×12",s:"heavy, controlled"}],
+   co:[{n:"Dragon Flag",r:"4×5",s:"4s lower each rep"},{n:"L-Sit Hold",r:"4×20s",s:"extend legs fully"},{n:"Hollow Rock",r:"3×30s",s:"maintain shape throughout"}]},
+  {w:4,rest:true},
+  {w:4,t:"Heavy Pulls",eq:["Adjustable KB"],rs:"30s between sets",
+   up:[{n:"KB Clean and Press",r:"4×5 ea",s:"link the movement fluidly"},{n:"KB Bent-Over Row",r:"4×12",s:"heavy, controlled tempo"},{n:"KB Upright Row",r:"4×12",s:"elbows lead high"}],
+   lo:[{n:"KB Snatch",r:"4×5 ea",s:"punch through at the top"},{n:"KB Deadlift",r:"4×10",s:"heaviest of the program"},{n:"Good Morning",r:"4×12",s:"feel the hamstring load"}],
+   co:[{n:"Turkish Get-Up",r:"3×3 ea",s:"heavier than week 3"},{n:"KB Farmer Carry",r:"4×35s",s:"heavy — don't lean"},{n:"Windshield Wiper",r:"3×12 ea",s:"straight legs if able"}]},
+  {w:4,t:"Cali Peak",eq:["Push-up handles","Bodyweight"],rs:"25s between sets",
+   up:[{n:"Hindu Push-Up",r:"4×12",s:"fluid arc, no jerking"},{n:"Push-Up to T-Rotation",r:"4×10 ea",s:"full rotation, hold 1s"},{n:"Pseudo Planche Lean",r:"4×25s",s:"max forward lean"}],
+   lo:[{n:"Cossack Squat",r:"4×10 ea",s:"deep and deliberate"},{n:"Nordic Hamstring Curl",r:"4×5",s:"5s lower every rep"},{n:"Split Jump",r:"4×10 ea",s:"max power"}],
+   co:[{n:"Copenhagen Plank",r:"4×25s ea",s:"full body line"},{n:"Hollow Rock",r:"4×35s",s:"arms fully overhead"},{n:"Leg Raise",r:"4×15",s:"slow lower, no floor touch"}]},
+  {w:4,rest:true},
+  {w:4,t:"Full Send",eq:["Adjustable KB","Push-up handles","Bodyweight"],rs:"25s between sets",
+   up:[{n:"KB Clean and Press",r:"4×6 ea",s:"heavy and linked"},{n:"Archer Push-Up",r:"4×6 ea",s:"full range, slow"},{n:"Renegade Row",r:"4×8 ea",s:"heavy KB"}],
+   lo:[{n:"KB Snatch",r:"4×6 ea",s:"max power each rep"},{n:"Bulgarian Split Squat",r:"4×12 ea",s:"heavy KB"},{n:"KB Swing",r:"4×20",s:"peak effort — finish strong"}],
+   co:[{n:"Turkish Get-Up",r:"3×4 ea",s:"heaviest of the program"},{n:"Dragon Flag",r:"4×6",s:"4s lower every rep"},{n:"Stir the Pot",r:"4×12 ea",s:"slow deliberate circles"}]},
+  {w:4,rest:true}
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────
+var cur = 0;
+var doneEx = {};
+try { cur = parseInt(localStorage.getItem('dg-cur') || '0') || 0; } catch(e){}
+try { doneEx = JSON.parse(localStorage.getItem('dg-ex') || '{}'); } catch(e){}
+
+function save() {
+  try { localStorage.setItem('dg-cur', cur); localStorage.setItem('dg-ex', JSON.stringify(doneEx)); } catch(e){}
+}
+
+function key(d,s,i) { return 'd'+d+'-'+s+'-'+i; }
+
+function pct(d) {
+  var day = P[d];
+  if (!day || day.rest) return 0;
+  var total = day.up.length + day.lo.length + day.co.length;
+  var c = 0;
+  ['up','lo','co'].forEach(function(s){ day[s].forEach(function(_,i){ if(doneEx[key(d,s,i)]) c++; }); });
+  return Math.round(c/total*100);
+}
+
+// ── BUILD UI ─────────────────────────────────────────────────────────────
+function buildAll() {
+  buildWeeks(); buildDays(); buildProgress(); buildCard();
+}
+
+function buildWeeks() {
+  var labels = [['Foundation','Easy'],['Building','Moderate'],['Hard Ramp','Hard'],['Peak Week','Peak']];
+  var html = '';
+  for (var w=0; w<4; w++) {
+    var active = P[cur].w === w+1;
+    html += '<button class="wtab' + (active?' on':'') + '" data-week="'+w+'">Week '+(w+1)+'<small>'+labels[w][1]+'</small></button>';
+  }
+  document.getElementById('wtabs').innerHTML = html;
+}
+
+function buildDays() {
+  var week = P[cur].w;
+  var ws = -1;
+  for (var i=0; i<P.length; i++) { if (P[i].w === week) { ws = i; break; } }
+  var html = '';
+  for (var i=0; i<7; i++) {
+    var di = ws+i;
+    if (di >= P.length) { html += '<div class="dbtn rest">—</div>'; continue; }
+    var day = P[di];
+    if (day.rest) { html += '<div class="dbtn rest">rest</div>'; continue; }
+    var cls = 'dbtn';
+    if (di === cur) cls += ' on';
+    else if (pct(di) === 100) cls += ' done';
+    html += '<button class="'+cls+'" data-day="'+di+'">'+(i+1)+'</button>';
+  }
+  document.getElementById('drow').innerHTML = html;
+}
+
+function buildProgress() {
+  var day = P[cur];
+  var p = day.rest ? 0 : pct(cur);
+  document.getElementById('plabel').textContent = 'Week '+day.w+' · Day '+(cur+1);
+  document.getElementById('ppct').textContent = day.rest ? 'Rest day' : p+'% done';
+  document.getElementById('pbar').style.width = p+'%';
+}
+
+var wbc = ['','w1','w2','w3','w4'];
+
+function buildCard() {
+  var day = P[cur];
+  var el = document.getElementById('content');
+  var banner = document.getElementById('done-banner');
+  if (day.rest) {
+    el.innerHTML = '<div class="rcard"><div class="ri">🛌</div><div class="rt">Rest Day</div><div class="rd">Recovery is where adaptation happens.<br>Hydrate, sleep well, come back stronger.</div></div>';
+    banner.className = 'done';
+    return;
+  }
+  function rows(arr, sec) {
+    var h = '';
+    arr.forEach(function(ex, i) {
+      var k = key(cur,sec,i);
+      var done = !!doneEx[k];
+      h += '<div class="er'+(done?' done':'')+'" data-key="'+k+'">';
+      h += '<span class="eidx">'+(i+1)+'</span>';
+      h += '<div class="einfo"><span class="en" data-ex="'+ex.n.replace(/"/g,'&quot;')+'">'+ex.n+'</span>';
+      if (ex.s) h += '<div class="esub">'+ex.s+'</div>';
+      h += '</div>';
+      h += '<span class="ereps '+sec+'">'+ex.r+'</span>';
+      h += '<button class="chk" data-key="'+k+'">✓</button>';
+      h += '</div>';
+    });
+    return h;
+  }
+  var html = '<div class="wcard">';
+  html += '<div class="ch"><div class="dmeta"><span class="dnum">Day '+(cur+1)+'</span><span class="wbadge '+wbc[day.w]+'">Week '+day.w+'</span></div>';
+  html += '<div class="wtitle">'+day.t+'</div>';
+  html += '<div class="wmeta">~15–20 min &nbsp;·&nbsp; '+day.rs+'</div></div>';
+  html += '<div class="etags">'+day.eq.map(function(e){return '<span class="etag">'+e+'</span>';}).join('')+'</div>';
+  html += '<div class="sh up">Upper Body</div>'+rows(day.up,'up');
+  html += '<div class="sh lo">Lower Body</div>'+rows(day.lo,'lo');
+  html += '<div class="sh co">Core</div>'+rows(day.co,'co');
+  html += '<div class="rnote">Tap any exercise name for step-by-step instructions</div>';
+  html += '</div>';
+  el.innerHTML = html;
+  banner.className = 'done' + (pct(cur)===100?' show':'');
+}
+
+// ── EVENT DELEGATION ──────────────────────────────────────────────────────
+document.addEventListener('click', function(e) {
+  var t = e.target;
+
+  // week tab
+  var wtab = t.closest('.wtab');
+  if (wtab) {
+    var w = parseInt(wtab.getAttribute('data-week'));
+    for (var i=0; i<P.length; i++) { if (P[i].w===w+1 && !P[i].rest) { cur=i; save(); buildAll(); return; } }
+  }
+
+  // day button
+  var dbtn = t.closest('.dbtn');
+  if (dbtn && dbtn.hasAttribute('data-day')) {
+    cur = parseInt(dbtn.getAttribute('data-day'));
+    save(); buildAll(); return;
+  }
+
+  // prev/next
+  if (t.id === 'btn-prev') {
+    if (cur > 0) { cur--; save(); buildAll(); } return;
+  }
+  if (t.id === 'btn-next') {
+    if (cur < P.length-1) { cur++; save(); buildAll(); } return;
+  }
+
+  // checkbox
+  var chk = t.closest('.chk');
+  if (chk && chk.hasAttribute('data-key')) {
+    var k = chk.getAttribute('data-key');
+    doneEx[k] = !doneEx[k];
+    save(); buildAll(); return;
+  }
+
+  // exercise name
+  var en = t.closest('.en');
+  if (en && en.hasAttribute('data-ex')) {
+    openModal(en.getAttribute('data-ex')); return;
+  }
+
+  // close modal
+  if (t.id === 'btn-close-modal' || t.id === 'mover') {
+    closeModal(); return;
+  }
+});
+
+// ── MODAL ────────────────────────────────────────────────────────────────
+function openModal(name) {
+  var ex = EX[name];
+  if (!ex) return;
+  document.getElementById('mname').textContent = name;
+  document.getElementById('mmuscle').textContent = ex.m;
+  var stepsHtml = '';
+  ex.s.forEach(function(step,i){
+    stepsHtml += '<li><span class="sn">'+(i+1)+'</span><span>'+step+'</span></li>';
+  });
+  document.getElementById('msteps').innerHTML = stepsHtml;
+  document.getElementById('mtip').textContent = '💡 '+ex.t;
+  document.getElementById('myt').href = ex.yt;
+  document.getElementById('mover').className = 'mover open';
+}
+function closeModal() {
+  document.getElementById('mover').className = 'mover';
+}
+
+buildAll();
+</script>
+</body>
+</html>
