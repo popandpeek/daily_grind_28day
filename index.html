@@ -700,7 +700,7 @@ select.form-input option{background:var(--input-bg);color:var(--tx);}
           <div class="page-title" id="ex-detail-title"></div>
           <div class="page-sub" id="ex-detail-sub"></div>
         </div>
-        <button class="btn" onclick="showView('today')">← Back</button>
+        <button class="btn" onclick="backToSession()">← Back</button>
       </div>
       <div id="ex-detail-content"></div>
     </div>
@@ -1981,6 +1981,12 @@ function openExDetail(dayExId, exName, exId, usesWeights) {
   // Switch to detail view without resetting timer
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
   document.getElementById('view-ex-detail').classList.add('active');
+}
+
+function backToSession() {
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  document.getElementById('view-today').classList.add('active');
+  renderSessionView();
 }
 
 function saveExDetail() {
